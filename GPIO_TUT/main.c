@@ -35,14 +35,11 @@ int main(void) {
 #endif
 
 	while (1) {
-		GPIOPinWrite(GPIO_PORTF_BASE, 0x02, 0x02);
-		SysCtlDelay(40000000/3);
-		GPIOPinWrite(GPIO_PORTF_BASE, 0b00000010, 0);
-		SysCtlDelay(40000000/3);
-//		GPIOPinWrite(GPIO_PORTF_BASE, 4, 0);
-//		SysCtlDelay(40000000 / 3);
-//		GPIOPinWrite(GPIO_PORTF_BASE, 4, 4);
-//		GPIOPinWrite(GPIO_PORTF_BASE, 2, 0);
-//		SysCtlDelay(40000000 / 3);
+		GPIOPinWrite(GPIO_PORTF_BASE, 2, 0)
+		GPIOPinWrite(GPIO_PORTF_BASE, 4, 0);
+		SysCtlDelay(40000000 / 3);
+		GPIOPinWrite(GPIO_PORTF_BASE, 4, 4);
+		GPIOPinWrite(GPIO_PORTF_BASE, 2, 0);
+		SysCtlDelay(40000000 / 3);
 	}
 }
