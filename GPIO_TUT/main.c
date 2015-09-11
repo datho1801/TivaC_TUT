@@ -23,7 +23,7 @@
 #include "driverlib/debug.h"
 #include "driverlib/rom.h"
 
-//#define USE_API
+#define USE_API
 #define USE_PORTF_INTERRUPT
 
 uint8_t var = 0x02, f_blink = 3;
