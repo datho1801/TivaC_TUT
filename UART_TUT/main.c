@@ -13,12 +13,24 @@
  * Đọc datasheet và user manual để hiểu rõ hơn về cách sử dụng các API
  ******************************************************************************/
 #include "library.h"
-unsigned char cout_Char;
+#include <stdio.h>
+uint32_t cout_Char = 0;
+uint32_t num;
 
 bool UART_putStr(const char * str) {
     while (*str) {
         UARTCharPut(UART0_BASE, *(str++));
     }
+    return true;
+}
+
+bool UART_debug(const char* str, ...) {
+    char buffer[50];
+    va_list list_arg;
+    va_start(list_arg, str);
+    vsprintf(buffer, str, list_arg);
+    UART_putStr(buffer);
+    va_end(list_arg);
     return true;
 }
 
@@ -60,12 +72,14 @@ int main(void) {
     /*******************************************************************************
      * In ra 1 chuỗi lên màn hình terminal (Hercules)
      ******************************************************************************/
-    UART_putStr("Hello everybody!\nThis is UART tutorial for Tiva C\n");
+    UART_putStr("Hello everybody!\nThis is UART tutorial for Tiva C\n\n\n");
     while (1) {
         /*******************************************************************************
          * Đoạn text dưới đây sẽ được in ra màn hình mỗi 1s
+         * In ra giá trị của cout_Char từ 0 tới 59 sau mỗi giây
          ******************************************************************************/
-        UART_putStr("This line will be repeat after one second :D\n");
-        SysCtlDelay(40000000/3);
+        UART_debug("Value of count char is %d\n",
+                cout_Char >= 59 ? cout_Char = 0 : ++cout_Char);
+        SysCtlDelay(40000000 / 3);
     }
 }

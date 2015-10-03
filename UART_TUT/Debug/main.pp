@@ -9,6 +9,7 @@ main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h
 main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/linkage.h
 main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/_lock.h
 main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/string.h
+main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h
 main.obj: D:/CCS/TivaWare/driverlib/sysctl.h
 main.obj: D:/CCS/TivaWare/driverlib/gpio.h
 main.obj: D:/CCS/TivaWare/driverlib/interrupt.h
@@ -23,6 +24,8 @@ main.obj: D:/CCS/TivaWare/driverlib/debug.h
 main.obj: D:/CCS/TivaWare/driverlib/rom.h
 main.obj: D:/CCS/TivaWare/driverlib/uart.h
 main.obj: D:/CCS/TivaWare/driverlib/pin_map.h
+main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdio.h
+main.obj: D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h
 
 ../main.c: 
 ../library.h: 
@@ -33,6 +36,7 @@ D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h:
 D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/linkage.h: 
 D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/_lock.h: 
 D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/string.h: 
+D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h: 
 D:/CCS/TivaWare/driverlib/sysctl.h: 
 D:/CCS/TivaWare/driverlib/gpio.h: 
 D:/CCS/TivaWare/driverlib/interrupt.h: 
@@ -47,3 +51,5 @@ D:/CCS/TivaWare/driverlib/debug.h:
 D:/CCS/TivaWare/driverlib/rom.h: 
 D:/CCS/TivaWare/driverlib/uart.h: 
 D:/CCS/TivaWare/driverlib/pin_map.h: 
+D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdio.h: 
+D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include/stdarg.h: 
