@@ -9,31 +9,37 @@ CMD_SRCS += \
 C_SRCS += \
 ../LCD_command.c \
 ../main.c \
+../main_alt.c \
 ../tm4c123gh6pm_startup_ccs.c 
 
 OBJS += \
 ./LCD_command.obj \
 ./main.obj \
+./main_alt.obj \
 ./tm4c123gh6pm_startup_ccs.obj 
 
 C_DEPS += \
 ./LCD_command.pp \
 ./main.pp \
+./main_alt.pp \
 ./tm4c123gh6pm_startup_ccs.pp 
 
 C_DEPS__QUOTED += \
 "LCD_command.pp" \
 "main.pp" \
+"main_alt.pp" \
 "tm4c123gh6pm_startup_ccs.pp" 
 
 OBJS__QUOTED += \
 "LCD_command.obj" \
 "main.obj" \
+"main_alt.obj" \
 "tm4c123gh6pm_startup_ccs.obj" 
 
 C_SRCS__QUOTED += \
 "../LCD_command.c" \
 "../main.c" \
+"../main_alt.c" \
 "../tm4c123gh6pm_startup_ccs.c" 
 
 

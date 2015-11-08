@@ -1,9 +1,17 @@
 /*******************************************************************************
+ * /Microwave/main_alt.c
+ *
+ *  Created on: Nov 8, 2015
+ *      Author: Dat Ho
+ *		Email : dat.ho1801@live.com
+ ******************************************************************************/
+
+/*******************************************************************************
  * /Microwave/main.c
  *
  *  Created on: Oct 30, 2015
  *      Author: Dat Ho
- *		Email : dat.ho1801@live.com
+ *      Email : dat.ho1801@live.com
  ******************************************************************************/
 #include "lib.h"
 
@@ -45,7 +53,7 @@
 #define SPEAKER_PIN         GPIO_PIN_2
 
 uint8_t mode = 0;
-bool door_is_close = false, is_active = false, is_started = false;
+bool door_is_close = false, is_active = false, start_stop = false;
 uint32_t min_alarm, sec_alarm, time_val, min_display = 0, sec_display = 0;
 uint8_t Micro_Grial = 1;
 
@@ -53,9 +61,15 @@ unsigned char * mode_def[2] = { "MicroWave", "Grill" };
 
 void Interrupt_TimerA0(void) {
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    // Giam bien dem
     time_val--;
+
+    // Tinh phut de hien thi len man hinh
     min_display = time_val / 60;
+
+    // Tinh giay de hien thi len man hinh
     sec_display = time_val - (min_display * 60);
+    // Hien thi len man hinh
     Write_Time(min_display, sec_display, 0, 9);
     if (time_val == 0) {
         // Bật loa
@@ -72,29 +86,44 @@ void Interrupt_TimerA0(void) {
 
 }
 
+void Interrupt_PortE(void) {
+    if (GPIOIntStatus(GPIO_PORTE_BASE, false) == GPIO_PIN_1) {
+        GPIOIntClear(GPIO_PORTE_BASE, GPIO_PIN_1);
+        min_alarm <= 0 ? min_alarm = 0 : min_alarm--;
+    }
+
+    if (GPIOIntStatus(GPIO_PORTE_BASE, false) == GPIO_PIN_3) {
+        GPIOIntClear(GPIO_PORTE_BASE, GPIO_PIN_3);
+        sec_alarm <= 0 ? sec_alarm = 0 : sec_alarm--;
+    }
+
+    if (GPIOIntStatus(GPIO_PORTE_BASE, false) == GPIO_PIN_2) {
+        GPIOIntClear(GPIO_PORTE_BASE, GPIO_PIN_2);
+        sec_alarm > 59 ? sec_alarm = 0 : sec_alarm++;
+    }
+
+    if (GPIOIntStatus(GPIO_PORTE_BASE, false) == GPIO_PIN_0) {
+        GPIOIntClear(GPIO_PORTE_BASE, GPIO_PIN_0);
+        min_alarm > 59 ? min_alarm = 0 : min_alarm++;
+    }
+    // Delay 10ms de han che nhieu tu nut nhan
+    SysCtlDelay(40000000/300);
+}
+
 void Interrupt_PortF(void) {
     if (GPIOIntStatus(GPIO_PORTF_BASE, false) == GPIO_PIN_1) {
         GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_1);
-        //time_alarm >= 3600 ? time_alarm = 3600 : time_alarm++;
-        //Write_Num(time_alarm, 2, 8);
+
     }
 
     if (GPIOIntStatus(GPIO_PORTF_BASE, false) == GPIO_PIN_4) {
         GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_4);
-        //time_alarm >= 10 ? time_alarm = 10 : time_alarm--;
-        //Write_Num(time_alarm, 2, 8);
 
     }
 
     if (GPIOIntStatus(GPIO_PORTF_BASE, false) == GPIO_PIN_3) {
         GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_3);
-//        if (door_is_close) {
-//            if (mode == MODE_USETIMER) {
-//                mode = MODE_AUTO;
-//            } else {
-//                mode++;
-//            }
-//        }
+        if (!is_active) mode > MODE_GRILL ? mode = MODE_MICRO : mode++;
     }
 
     if (GPIOIntStatus(GPIO_PORTF_BASE, false) == GPIO_PIN_2) {
@@ -104,10 +133,45 @@ void Interrupt_PortF(void) {
 
     if (GPIOIntStatus(GPIO_PORTF_BASE, false) == GPIO_PIN_0) {
         GPIOIntClear(GPIO_PORTF_BASE, GPIO_PIN_0);
-//        mode = MODE_USETIMER;
-//        if (door_is_close) {
-//            TimerEnable(TIMER0_BASE, TIMER_A);
-//        }
+
+        if (start_stop) {
+            start_stop = false;
+        } else {
+            start_stop = true;
+        }
+
+        if (start_stop) {
+            is_active = true;
+            time_val = min_alarm * 60 + sec_alarm;
+            if (time_val <= 9) {
+                Write_Str("Error! Time is small", 3, 0);
+            } else {
+                // kiem tra neu cua dong moi bat dau nuong
+                if (door_is_close) {
+                    // hien thi trang thai cho nguoi dung
+                    Write_Str("Running:", 2, 0);
+                    // hien thi mode hien tai
+                    Write_Str(mode_def[mode], 2, 10);
+                    // bat dau dem nguoc thoi gian
+                    TimerEnable(TIMER0_BASE, TIMER_A);
+                    // lua chon mode la micro hay grill
+                    if (mode == MODE_GRILL) {
+                        GPIOPinWrite(GPIO_PORTB_BASE, GRILL_PIN, GRILL_PIN);
+                    } else {
+                        GPIOPinWrite(GPIO_PORTB_BASE, MICRO_PIN, MICRO_PIN);
+                    }
+                }
+            }
+        } else {
+            // Xoa man hinh
+            Write_Command(0x01);
+            // Hien thi che do
+            Write_Str("Stoped!", 2, 0);
+            // Reset bien
+            min_alarm = sec_alarm = time_val = 0;
+            // Tat timer
+            TimerDisable(TIMER0_BASE, TIMER_A);
+        }
     }
 
     SysCtlDelay(40000000 / 300);
@@ -119,15 +183,19 @@ void MCU_Clk_Init(void) {
 }
 
 void Input_Init(void) {
+    // Mo clock cho ngoai vi
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 
+    // Cau hinh la ngo vao cho port F
     GPIODirModeSet(GPIO_PORTF_BASE, 0x1F,
     GPIO_DIR_MODE_IN);
 
+    // Cau hinh la ngo vao cho port E
     GPIODirModeSet(GPIO_PORTE_BASE, 0x0F,
     GPIO_DIR_MODE_IN);
 
+    // Cau hinh tro keo len cho port F
     GPIOPadConfigSet(GPIO_PORTF_BASE, 0x1F,
     GPIO_STRENGTH_2MA,
     GPIO_PIN_TYPE_STD_WPU);
@@ -136,9 +204,14 @@ void Input_Init(void) {
     GPIO_STRENGTH_2MA,
     GPIO_PIN_TYPE_STD_WPU);
 
+    // Cau hinh va enable ngat cho port F
     GPIOIntTypeSet(GPIO_PORTF_BASE, 0x1F, GPIO_RISING_EDGE);
     IntEnable(INT_GPIOF);
     GPIOIntEnable(GPIO_PORTF_BASE, 0x1F);
+
+    GPIOIntTypeSet(GPIO_PORTE_BASE, 0x0F, GPIO_RISING_EDGE);
+    IntEnable(INT_GPIOE);
+    GPIOIntEnable(GPIO_PORTE_BASE, 0x0F);
 }
 
 void Output_Init(void) {
@@ -161,83 +234,30 @@ int main(void) {
     Input_Init();
     Output_Init();
     LCD_Init();
+    // Cau hinh timer xay ra ngat sau 1s
     Timer0A_Config(40000000);
 
-    Write_Str("MICROWAVE_PROGRAM", 0, 0);
-    Write_Str(mode_def[mode], 1, 0);
+    Write_Str("Hello World!", 0, 0);
 
     while (1) {
         if (CuaDong) {
+            // Bat den
             door_is_close = true;
             GPIOPinWrite(GPIO_PORTB_BASE, LIGHT_PIN, LIGHT_PIN);
         } else {
             door_is_close = false;
             if (is_active) {
+                // Neu dang nuong ma mo cua thi tat ngay lap tuc thiet bi nuong, tat timer va bat loa canh bao
                 GPIOPinWrite(GPIO_PORTB_BASE, GRILL_PIN, GRILL_PIN);
                 GPIOPinWrite(GPIO_PORTB_BASE, MICRO_PIN, MICRO_PIN);
                 TimerDisable(TIMER0_BASE, TIMER_A);
                 GPIOPinWrite(GPIO_PORTB_BASE, SPEAKER_PIN, 0);
             } else {
-                GPIOPinWrite(GPIO_PORTB_BASE, LIGHT_PIN, 0);
+                // Neu da nuong xong va cua mo thi tat loa
                 GPIOPinWrite(GPIO_PORTB_BASE, SPEAKER_PIN, 0);
             }
 
         }
-
-        if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0)) {
-            min_alarm > 59 ? min_alarm = 0 : min_alarm++;
-        }
-
-        if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1)) {
-            min_alarm <= 0 ? min_alarm = 0 : min_alarm--;
-        }
-
-        if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_2)) {
-            sec_alarm > 59 ? sec_alarm = 0 : sec_alarm++;
-        }
-
-        if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3)) {
-            sec_alarm <= 0 ? sec_alarm = 0 : sec_alarm--;
-        }
-
-        if (!GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0)) {
-            if (is_started) {
-                is_started = false;
-            } else {
-                is_started = true;
-            }
-
-        }
-
-        if (!GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_3)) {
-            if (!is_active) mode > MODE_GRILL ? mode = MODE_MICRO : mode++;
-
-        }
-
-        if (is_started) {
-            if (!is_active) {
-                is_active = true;
-                time_val = min_alarm * 60 + sec_alarm;
-                if (time_val <= 9) {
-                    Write_Str("Error! Time is small", 3, 0);
-                } else {
-                    if (door_is_close) {
-                        Write_Str("Running:", 2, 0);
-                        Write_Str(mode_def[mode], 2, 10);
-                        TimerEnable(TIMER0_BASE, TIMER_A);
-                        if (mode == MODE_GRILL) {
-                            GPIOPinWrite(GPIO_PORTB_BASE, GRILL_PIN, GRILL_PIN);
-                        } else {
-                            GPIOPinWrite(GPIO_PORTB_BASE, MICRO_PIN, MICRO_PIN);
-                        }
-                    }
-                }
-            } else {
-                min_alarm = sec_alarm = time_val = 0;
-                TimerDisable(TIMER0_BASE, TIMER_A);
-            }
-        }
-
     }
 }
 

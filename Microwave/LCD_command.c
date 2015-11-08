@@ -94,4 +94,37 @@ void Write_Str(uint8_t* str, uint8_t row, uint8_t col) {
     }
 }
 
+void Write_Time(uint32_t min, uint32_t sec, uint8_t row, uint8_t col) {
+    uint8_t num1, num2, num3, num4, address_d;
+    num1 = min / 10;
+    num2 = min - num1 * 10;
+
+    num3 = sec / 10;
+    num4 = sec - num3 * 10;
+
+    switch (row) {
+    case 0:
+        address_d = 0x80 + col;
+        break;
+    case 1:
+        address_d = 0xC0 + col;
+        break;
+    case 2:
+        address_d = 0x94 + col;
+        break;
+    case 3:
+        address_d = 0xD4 + col;
+        break;
+    default:
+        address_d = 0x80 + col;
+        break;
+    }
+    Write_Command(address_d);
+    Write_Char(num1 + 0x30);
+    Write_Char(num2 + 0x30);
+    Write_Char(':');
+    Write_Char(num3 + 0x30);
+    Write_Char(num4 + 0x30);
+
+}
 

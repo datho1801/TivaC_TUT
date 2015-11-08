@@ -12,6 +12,7 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./LCD_command.obj" \
 "./main.obj" \
+"./main_alt.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -152,8 +153,8 @@ Microwave.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "LCD_command.pp" "main.pp" "tm4c123gh6pm_startup_ccs.pp" 
-	-$(RM) "LCD_command.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
+	-$(RM) "LCD_command.pp" "main.pp" "main_alt.pp" "tm4c123gh6pm_startup_ccs.pp" 
+	-$(RM) "LCD_command.obj" "main.obj" "main_alt.obj" "tm4c123gh6pm_startup_ccs.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

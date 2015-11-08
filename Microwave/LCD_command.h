@@ -26,5 +26,6 @@ void E_Pulse(void);
 void Write_Command(uint8_t cmd);
 void Write_Char(uint8_t m_char);
 void Write_Str(uint8_t* str, uint8_t row, uint8_t col);
+void Write_Time(uint32_t min, uint32_t sec, uint8_t row, uint8_t col);
 
 #endif /* LCD_COMMAND_H_ */
