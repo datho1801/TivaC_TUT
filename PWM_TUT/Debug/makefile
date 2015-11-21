@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5
+CG_TOOL_ROOT := D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.6
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -12,7 +12,6 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
-"./utils/uartstdio.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
 -l"libc.a" \
@@ -26,9 +25,7 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
--include utils/subdir_vars.mk
 -include subdir_rules.mk
--include utils/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -122,40 +119,40 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-ADC_TUT.out \
+PWM_TUT.out \
 
 EXE_OUTPUTS__QUOTED += \
-"ADC_TUT.out" \
+"PWM_TUT.out" \
 
 BIN_OUTPUTS += \
-ADC_TUT.hex \
+PWM_TUT.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"ADC_TUT.hex" \
+"PWM_TUT.hex" \
 
 
 # All Target
-all: ADC_TUT.out
+all: PWM_TUT.out
 
 # Tool invocations
-ADC_TUT.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+PWM_TUT.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker'
-	"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=TARGET_IS_BLIZZARD_RB1 --define=PART_TM4C123GH6PM --diag_warning=225 --display_error_number --diag_wrap=off -z -m"ADC_TUT.map" --heap_size=0 --stack_size=512 -i"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/lib" -i"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/include" --reread_libs --warn_sections --diag_wrap=off --display_error_number --xml_link_info="ADC_TUT_linkInfo.xml" --rom_model -o "ADC_TUT.out" $(ORDERED_OBJS)
+	"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.6/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --diag_warning=225 --display_error_number --diag_wrap=off -z -m"PWM_TUT.map" --heap_size=0 --stack_size=512 -i"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.6/lib" -i"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.6/include" --reread_libs --warn_sections --diag_wrap=off --display_error_number --xml_link_info="PWM_TUT_linkInfo.xml" --rom_model -o "PWM_TUT.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-ADC_TUT.hex: $(EXE_OUTPUTS)
+PWM_TUT.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: ARM Hex Utility'
-	"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.5/bin/armhex"  -o "ADC_TUT.hex" $(EXE_OUTPUTS__QUOTED)
+	"D:/CCS/ccsv6/tools/compiler/ti-cgt-arm_5.2.6/bin/armhex"  -o "PWM_TUT.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "utils\uartstdio.pp" 
-	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "utils\uartstdio.obj" 
+	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

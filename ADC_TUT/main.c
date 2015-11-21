@@ -9,17 +9,16 @@
 #include "define.h"
 uint32_t ADC_value[4];
 
-uint32_t ADC_getVal(void)
-{
+uint32_t ADC_getVal(void) {
     uint32_t avg_Value = 0, tempC = 0;
     ADCIntClear(ADC0_BASE, 1);
     ADCProcessorTrigger(ADC0_BASE, 1);
-    while(!ROM_ADCIntStatus(ADC0_BASE, 1, false))
-    {
+    while (!ROM_ADCIntStatus(ADC0_BASE, 1, false)) {
     }
     ADCSequenceDataGet(ADC0_BASE, 1, ADC_value);
-    avg_Value = (ADC_value[0] + ADC_value[1] + ADC_value[2] + ADC_value[3] + 2)/4;
-    tempC = (1475 - ((2475 * avg_Value)) / 4096)/10;
+    avg_Value = (ADC_value[0] + ADC_value[1] + ADC_value[2] + ADC_value[3] + 2)
+            / 4;
+    tempC = (1475 - ((2475 * avg_Value)) / 4096) / 10;
 
     return tempC;
 }
@@ -50,8 +49,8 @@ int main(void) {
     UARTprintf("This is ADC examlpe");
 
     while (1) {
-        UARTprintf("Temperature is: %d \2103 C\n", ADC_getVal());
-        SysCtlDelay(40000000/3);
+        UARTprintf("Temperature is: %d \210 C\n", ADC_getVal());
+        SysCtlDelay(40000000 / 3);
     }
 }
 
